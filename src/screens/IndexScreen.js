@@ -1,10 +1,24 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import { Context } from '../context/BlogContext'
 import { Feather } from '@expo/vector-icons'
 
 const IndexScreen = ({ navigation }) => {
-    const { state, addBlogPost, deleteBlogPost } = useContext(Context)
+    const { state, deleteBlogPost, getBlogPosts } = useContext(Context)
+
+    useEffect(() => {
+        getBlogPosts()
+
+        // when this screen is navigated to, fetch again
+        const listener = navigation.addListener('didFocus', () => {
+            getBlogPosts() 
+        })
+
+        // this happens only if this screen is removed from the hierarchy, this function does clean-up to prevent a memory leak
+        return () => {
+            listener.remove()
+        }
+    }, [])
 
     return (
         <View>
